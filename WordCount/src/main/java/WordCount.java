@@ -1,4 +1,5 @@
 import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -26,6 +27,8 @@ public class WordCount extends Configured implements Tool {
 
         String inputPath = strings[0];
         String outputPath = strings[0] + ".out";
+        FileSystem fs = FileSystem.get(getConf());
+        fs.delete(new Path(outputPath), true);
 
         Job job = Job.getInstance(getConf(), "word counting");
         job.setJarByClass(WordCount.class);
@@ -47,7 +50,7 @@ public class WordCount extends Configured implements Tool {
         return 0;
     }
 
-    public class WCMapper extends Mapper<Object, Text, Text, IntWritable> {
+    public static class WCMapper extends Mapper<Object, Text, Text, IntWritable> {
 
         Text ok = new Text();
         IntWritable ov = new IntWritable(1);
@@ -64,7 +67,7 @@ public class WordCount extends Configured implements Tool {
         }
     }
 
-    public class WCReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+    public static class WCReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
 
         IntWritable ov = new IntWritable();
 
